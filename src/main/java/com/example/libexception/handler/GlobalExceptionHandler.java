@@ -1,11 +1,11 @@
-package com.example.exceptionlib.handler;
+package com.example.libexception.handler;
 
-import com.example.exceptionlib.dto.ErrorResponse;
-import com.example.exceptionlib.dto.FieldErrorDetail;
-import com.example.exceptionlib.error.CommonErrorCode;
-import com.example.exceptionlib.exception.BaseException;
-import com.example.exceptionlib.exception.ValidationException;
-import com.example.exceptionlib.reporting.ErrorReporter;
+import com.example.libexception.dto.ErrorResponse;
+import com.example.libexception.dto.FieldErrorDetail;
+import com.example.libexception.error.CommonErrorCode;
+import com.example.libexception.exception.BaseException;
+import com.example.libexception.exception.ValidationException;
+import com.example.libexception.reporting.ErrorReporter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;

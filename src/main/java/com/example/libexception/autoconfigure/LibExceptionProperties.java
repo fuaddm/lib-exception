@@ -1,4 +1,4 @@
-package com.example.exceptionlib.autoconfigure;
+package com.example.libexception.autoconfigure;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -18,8 +18,8 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  */
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "exception-lib")
-public class ExceptionLibProperties {
+@ConfigurationProperties(prefix = "lib-exception")
+public class LibExceptionProperties {
 
     @NestedConfigurationProperty
     private final ErrorReporting errorReporting = new ErrorReporting();

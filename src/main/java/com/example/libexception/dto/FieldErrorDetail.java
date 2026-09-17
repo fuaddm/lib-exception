@@ -1,10 +1,11 @@
-package com.example.exceptionlib.dto;
+package com.example.libexception.dto;
 
+import com.example.libexception.exception.ValidationException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-/** One field-level validation failure, as reported by Bean Validation or a {@link com.example.exceptionlib.exception.ValidationException}. */
+/** One field-level validation failure, as reported by Bean Validation or a {@link ValidationException}. */
 @Getter
 @Builder
 @AllArgsConstructor

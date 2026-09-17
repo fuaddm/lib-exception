@@ -1,4 +1,4 @@
-package com.example.exceptionlib.reporting;
+package com.example.libexception.reporting;
 
 /** Used when no error-tracking DSN is configured, so {@code GlobalExceptionHandler} always has a reporter to call. */
 public class NoopErrorReporter implements ErrorReporter {

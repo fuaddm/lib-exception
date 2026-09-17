@@ -1,7 +1,9 @@
-package com.example.exceptionlib.reporting;
+package com.example.libexception.reporting;
+
+import com.example.libexception.handler.GlobalExceptionHandler;
 
 /**
- * Forwards an exception caught by {@link com.example.exceptionlib.handler.GlobalExceptionHandler}
+ * Forwards an exception caught by {@link GlobalExceptionHandler}
  * to an external error-tracking system. Kept as an interface so the default
  * Sentry-protocol implementation can be swapped (or no-op'd) without touching the handler.
  */

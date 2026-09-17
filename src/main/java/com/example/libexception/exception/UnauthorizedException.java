@@ -1,7 +1,7 @@
-package com.example.exceptionlib.exception;
+package com.example.libexception.exception;
 
-import com.example.exceptionlib.error.CommonErrorCode;
-import com.example.exceptionlib.error.ErrorCode;
+import com.example.libexception.error.CommonErrorCode;
+import com.example.libexception.error.ErrorCode;
 
 /** Thrown when authentication is missing or invalid (e.g. bad/expired token). Maps to HTTP 401. */
 public class UnauthorizedException extends BaseException {

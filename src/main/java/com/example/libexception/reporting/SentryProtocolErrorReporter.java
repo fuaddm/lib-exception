@@ -1,6 +1,6 @@
-package com.example.exceptionlib.reporting;
+package com.example.libexception.reporting;
 
-import com.example.exceptionlib.autoconfigure.ExceptionLibProperties;
+import com.example.libexception.autoconfigure.LibExceptionProperties;
 import io.sentry.Sentry;
 
 /**
@@ -10,7 +10,7 @@ import io.sentry.Sentry;
  */
 public class SentryProtocolErrorReporter implements ErrorReporter {
 
-    public SentryProtocolErrorReporter(ExceptionLibProperties.ErrorReporting config) {
+    public SentryProtocolErrorReporter(LibExceptionProperties.ErrorReporting config) {
         if (!Sentry.isEnabled()) {
             Sentry.init(options -> {
                 options.setDsn(config.getDsn());

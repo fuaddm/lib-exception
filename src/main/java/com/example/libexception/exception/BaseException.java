@@ -1,12 +1,14 @@
-package com.example.exceptionlib.exception;
+package com.example.libexception.exception;
 
-import com.example.exceptionlib.error.ErrorCode;
+import com.example.libexception.dto.ErrorResponse;
+import com.example.libexception.error.ErrorCode;
+import com.example.libexception.handler.GlobalExceptionHandler;
 import lombok.Getter;
 
 /**
  * Root of the shared exception hierarchy. Carries an {@link ErrorCode} so
- * {@link com.example.exceptionlib.handler.GlobalExceptionHandler} can translate any
- * subclass into a consistent {@link com.example.exceptionlib.dto.ErrorResponse}
+ * {@link GlobalExceptionHandler} can translate any
+ * subclass into a consistent {@link ErrorResponse}
  * without each microservice writing its own translation logic.
  * <p>
  * Prefer one of the concrete subclasses ({@link NotFoundException}, {@link ConflictException}, ...)

@@ -1,7 +1,7 @@
-package com.example.exceptionlib.exception;
+package com.example.libexception.exception;
 
-import com.example.exceptionlib.error.CommonErrorCode;
-import com.example.exceptionlib.error.ErrorCode;
+import com.example.libexception.error.CommonErrorCode;
+import com.example.libexception.error.ErrorCode;
 
 /** Thrown when a client has exceeded a rate limit. Maps to HTTP 429. */
 public class TooManyRequestsException extends BaseException {

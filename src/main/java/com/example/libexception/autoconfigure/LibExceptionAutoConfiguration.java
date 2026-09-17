@@ -1,9 +1,9 @@
-package com.example.exceptionlib.autoconfigure;
+package com.example.libexception.autoconfigure;
 
-import com.example.exceptionlib.handler.GlobalExceptionHandler;
-import com.example.exceptionlib.reporting.ErrorReporter;
-import com.example.exceptionlib.reporting.NoopErrorReporter;
-import com.example.exceptionlib.reporting.SentryProtocolErrorReporter;
+import com.example.libexception.handler.GlobalExceptionHandler;
+import com.example.libexception.reporting.ErrorReporter;
+import com.example.libexception.reporting.NoopErrorReporter;
+import com.example.libexception.reporting.SentryProtocolErrorReporter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -23,13 +23,13 @@ import org.springframework.web.servlet.DispatcherServlet;
  */
 @AutoConfiguration(after = WebMvcAutoConfiguration.class)
 @ConditionalOnClass(DispatcherServlet.class)
-@EnableConfigurationProperties(ExceptionLibProperties.class)
-public class ExceptionLibAutoConfiguration {
+@EnableConfigurationProperties(LibExceptionProperties.class)
+public class LibExceptionAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public ErrorReporter errorReporter(ExceptionLibProperties properties) {
-        ExceptionLibProperties.ErrorReporting config = properties.getErrorReporting();
+    public ErrorReporter errorReporter(LibExceptionProperties properties) {
+        LibExceptionProperties.ErrorReporting config = properties.getErrorReporting();
         if (config.isEnabled() && StringUtils.hasText(config.getDsn())) {
             return new SentryProtocolErrorReporter(config);
         }
@@ -38,7 +38,7 @@ public class ExceptionLibAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public GlobalExceptionHandler globalExceptionHandler(ErrorReporter errorReporter, ExceptionLibProperties properties) {
+    public GlobalExceptionHandler globalExceptionHandler(ErrorReporter errorReporter, LibExceptionProperties properties) {
         return new GlobalExceptionHandler(errorReporter, properties.getErrorReporting().getMinimumStatus());
     }
 }

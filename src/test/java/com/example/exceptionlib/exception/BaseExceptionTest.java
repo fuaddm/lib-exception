@@ -1,6 +1,8 @@
 package com.example.exceptionlib.exception;
 
-import com.example.exceptionlib.error.CommonErrorCode;
+import com.example.libexception.error.CommonErrorCode;
+import com.example.libexception.exception.ConflictException;
+import com.example.libexception.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

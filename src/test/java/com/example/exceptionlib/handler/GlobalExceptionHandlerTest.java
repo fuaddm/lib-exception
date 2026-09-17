@@ -1,10 +1,11 @@
 package com.example.exceptionlib.handler;
 
-import com.example.exceptionlib.dto.ErrorResponse;
-import com.example.exceptionlib.error.CommonErrorCode;
-import com.example.exceptionlib.exception.ConflictException;
-import com.example.exceptionlib.exception.NotFoundException;
-import com.example.exceptionlib.reporting.ErrorReporter;
+import com.example.libexception.dto.ErrorResponse;
+import com.example.libexception.error.CommonErrorCode;
+import com.example.libexception.exception.ConflictException;
+import com.example.libexception.exception.NotFoundException;
+import com.example.libexception.handler.GlobalExceptionHandler;
+import com.example.libexception.reporting.ErrorReporter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

@@ -1,5 +1,7 @@
-package com.example.exceptionlib.dto;
+package com.example.libexception.dto;
 
+import com.example.libexception.error.ErrorCode;
+import com.example.libexception.handler.GlobalExceptionHandler;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
@@ -10,7 +12,7 @@ import java.util.List;
 
 /**
  * Standard error body returned by every microservice that installs
- * {@link com.example.exceptionlib.handler.GlobalExceptionHandler}. Keeping this
+ * {@link GlobalExceptionHandler}. Keeping this
  * shape identical across services is the whole point of this library: any
  * client (web, mobile, or another microservice) can parse errors with one model.
  */
@@ -29,7 +31,7 @@ public class ErrorResponse {
     /** HTTP reason phrase, e.g. "Not Found". */
     private final String error;
 
-    /** Stable machine-readable code from an {@link com.example.exceptionlib.error.ErrorCode}, e.g. "PIN_NOT_FOUND". */
+    /** Stable machine-readable code from an {@link ErrorCode}, e.g. "PIN_NOT_FOUND". */
     private final String code;
 
     /** Human-readable message, safe to show to a developer or end user. */

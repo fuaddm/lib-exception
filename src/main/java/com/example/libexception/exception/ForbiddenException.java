@@ -1,7 +1,7 @@
-package com.example.exceptionlib.exception;
+package com.example.libexception.exception;
 
-import com.example.exceptionlib.error.CommonErrorCode;
-import com.example.exceptionlib.error.ErrorCode;
+import com.example.libexception.error.CommonErrorCode;
+import com.example.libexception.error.ErrorCode;
 
 /** Thrown when the caller is authenticated but not allowed to perform the action. Maps to HTTP 403. */
 public class ForbiddenException extends BaseException {

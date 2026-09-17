@@ -1,6 +1,1 @@
-rootProject.name = 'exception-lib'
-
-// Standalone Spring Boot tool (not published) that fetches the Nexus
-// deployer credentials from Vault via Spring Cloud Vault for scripts/publish-nexus.{ps1,sh}.
-// See docs/design-decisions.md for why this lives in its own subproject.
-include 'vault-tool'
+rootProject.name = 'lib-exception'

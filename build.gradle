@@ -4,10 +4,6 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'com.example'
-version = '0.0.1'
-description = 'Shared exception-handling library for microservices (common exception hierarchy, standard error response, auto-registered @RestControllerAdvice)'
-
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
@@ -19,9 +15,6 @@ repositories {
     mavenCentral()
 }
 
-// Import the Spring Boot BOM so our (compileOnly) Spring dependency versions
-// stay aligned with whatever Boot version a consuming microservice uses,
-// without this library ever declaring a hard runtime dependency on Spring itself.
 dependencyManagement {
     imports {
         mavenBom "org.springframework.boot:spring-boot-dependencies:4.1.1"
@@ -29,24 +22,14 @@ dependencyManagement {
 }
 
 dependencies {
-    // compileOnly: this library is meant to be dropped into a Spring Boot web
-    // microservice, which already brings these on its own classpath at runtime.
-    // Declaring them compileOnly avoids forcing a Spring/Jakarta version onto
-    // consumers and keeps this artifact's own transitive dependency graph empty.
     compileOnly 'org.springframework.boot:spring-boot-starter-webmvc'
     compileOnly 'org.springframework.boot:spring-boot-starter-validation'
     compileOnly 'org.springframework.boot:spring-boot-autoconfigure'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    // Generates META-INF/spring-autoconfigure-metadata.properties so Boot can
-    // skip evaluating our auto-configuration when its @ConditionalOn... don't match.
     annotationProcessor 'org.springframework.boot:spring-boot-autoconfigure-processor'
 
-    // Real (non-compileOnly) runtime dependency: forwards exceptions to any
-    // server speaking the Sentry event-ingestion protocol - Sentry itself,
-    // self-hosted Bugsink, GlitchTip, etc. Only activates when a DSN is
-    // configured by the consuming service; otherwise a no-op reporter is used.
     implementation 'io.sentry:sentry:8.56.0'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc'
@@ -67,126 +50,17 @@ publishing {
     publications {
         mavenJava(MavenPublication) {
             from components.java
-            pom {
-                name = 'exception-lib'
-                description = project.description
-            }
         }
     }
     repositories {
-        // `./gradlew publishToMavenLocal` makes it consumable by other local
-        // microservice builds as com.example:exception-lib:0.0.1-SNAPSHOT.
-        mavenLocal()
-
-        // Self-hosted Nexus Repository Manager - shared by every developer and CI
-        // so all microservices resolve the SAME published artifact instead of each
-        // dev's local Maven cache. Nexus 3's standard layout uses separate hosted
-        // repos for releases vs snapshots; the right one is picked automatically
-        // from the version suffix (this project is currently "0.0.1-SNAPSHOT").
-        //
-        // url/credentials below are placeholders: `publishMavenJavaPublicationToNexusRepository`'s
-        // doFirst (bottom of this file) always overwrites them at execution time
-        // with values fetched from Vault (see fetchNexusCredentialsFromVault / vault-tool),
-        // so `./gradlew publish` alone does the whole fetch-then-publish flow -
-        // no separate script, no credentials ever hardcoded here. Override just the
-        // host/path (not credentials) via NEXUS_RELEASES_URL / NEXUS_SNAPSHOTS_URL
-        // env vars if your releases/snapshots repos live somewhere non-standard.
         maven {
             name = "Nexus"
-            url = uri("https://nexus.invalid/repository/maven-releases/")
-            // Nexus is reachable only over the private Tailscale network (plain
-            // http://, no public TLS termination in front of it) - safe to allow here.
+            url = uri(System.getenv("NEXUS_URL"))
             allowInsecureProtocol = true
             credentials {
-                username = "placeholder"
-                password = "placeholder"
+                username = System.getenv("NEXUS_USERNAME")
+                password = System.getenv("NEXUS_PASSWORD")
             }
-        }
-
-        // GitHub Packages, kept as a fallback if you'd rather not run your own Nexus.
-        // maven {
-        //     name = "GitHubPackages"
-        //     url = uri("https://maven.pkg.github.com/<owner>/<repo>")
-        //     credentials {
-        //         username = System.getenv("GITHUB_ACTOR")
-        //         password = System.getenv("GITHUB_TOKEN")
-        //     }
-        // }
-    }
-}
-
-// Fetches the Nexus deployer credentials from Vault (AppRole auth) via the
-// vault-tool subproject (Spring Cloud Vault) and feeds them into the Nexus
-// publishing repository above, so `./gradlew publish` is the whole flow -
-// see docs/publishing.md and docs/design-decisions.md for why this forks a
-// separate JVM (vault-tool, via JavaExec) instead of running Spring Cloud
-// Vault inside the Gradle daemon itself.
-tasks.register('fetchNexusCredentialsFromVault', JavaExec) {
-    group = 'publishing'
-    description = 'Fetches Nexus deployer credentials from Vault via Spring Cloud Vault (see vault-tool/).'
-
-    classpath = project(':vault-tool').sourceSets.main.runtimeClasspath
-    mainClass = 'com.example.vaulttool.VaultToolApplication'
-    // Don't let JavaExec's own generic "non-zero exit value" failure hide
-    // whatever vault-tool actually printed - report that ourselves below.
-    ignoreExitValue = true
-
-    def capturedOutput = new ByteArrayOutputStream()
-    def capturedError = new ByteArrayOutputStream()
-    standardOutput = capturedOutput
-    errorOutput = capturedError
-
-    doFirst {
-        ['VAULT_URI', 'VAULT_ROLE_ID', 'VAULT_SECRET_ID'].each { name ->
-            if (!System.getenv(name)) {
-                throw new GradleException("${name} is not set - see docs/publishing.md")
-            }
-        }
-    }
-
-    doLast {
-        if (executionResult.get().exitValue != 0) {
-            logger.error(capturedError.toString())
-            logger.error(capturedOutput.toString())
-            throw new GradleException("vault-tool exited with code ${executionResult.get().exitValue} " +
-                    "fetching Nexus credentials from Vault - see the output above")
-        }
-
-        def fetched = [:]
-        capturedOutput.toString().eachLine { line ->
-            if (line.startsWith('VAULT_TOOL_PROPERTY ')) {
-                def entry = line.substring('VAULT_TOOL_PROPERTY '.length())
-                def separatorIndex = entry.indexOf('=')
-                fetched[entry.substring(0, separatorIndex)] = entry.substring(separatorIndex + 1)
-            }
-        }
-        if (!fetched.NEXUS_URL || !fetched.NEXUS_USERNAME || !fetched.NEXUS_PASSWORD) {
-            logger.error(capturedError.toString())
-            logger.error(capturedOutput.toString())
-            throw new GradleException("vault-tool did not print the expected NEXUS_URL/NEXUS_USERNAME/NEXUS_PASSWORD " +
-                    "lines - see the output above")
-        }
-        ext.nexusUrl = fetched.NEXUS_URL
-        ext.nexusUsername = fetched.NEXUS_USERNAME
-        ext.nexusPassword = fetched.NEXUS_PASSWORD
-
-        println "NEXUS_URL: ${fetched.NEXUS_URL}"
-        println "NEXUS_USERNAME: ${fetched.NEXUS_USERNAME}"
-        println "NEXUS_PASSWORD retrieved: ${fetched.NEXUS_PASSWORD as boolean} (length ${fetched.NEXUS_PASSWORD.length()})"
-    }
-}
-
-tasks.named('publishMavenJavaPublicationToNexusRepository') {
-    dependsOn tasks.named('fetchNexusCredentialsFromVault')
-    doFirst {
-        def fetched = tasks.named('fetchNexusCredentialsFromVault').get()
-        def nexusRepo = publishing.repositories.getByName('Nexus')
-        def releasesUrl = System.getenv('NEXUS_RELEASES_URL') ?: "${fetched.nexusUrl}/repository/maven-releases/"
-        def snapshotsUrl = System.getenv('NEXUS_SNAPSHOTS_URL') ?: "${fetched.nexusUrl}/repository/maven-snapshots/"
-        nexusRepo.url = uri(version.toString().endsWith('SNAPSHOT') ? snapshotsUrl : releasesUrl)
-        nexusRepo.credentials {
-            username = fetched.nexusUsername
-            password = fetched.nexusPassword
         }
     }
 }

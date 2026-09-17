@@ -1,6 +1,8 @@
 package com.example.exceptionlib.reporting;
 
-import com.example.exceptionlib.autoconfigure.ExceptionLibProperties;
+import com.example.libexception.autoconfigure.LibExceptionProperties;
+import com.example.libexception.reporting.ErrorReporter;
+import com.example.libexception.reporting.SentryProtocolErrorReporter;
 import io.sentry.Sentry;
 import io.sentry.protocol.SentryId;
 import org.junit.jupiter.api.AfterEach;
@@ -33,7 +35,7 @@ class SentryProtocolErrorReporterSmokeTest {
     void sendsATestExceptionToTheConfiguredDsn() {
         String dsn = System.getenv("BUGSINK_DSN");
 
-        ExceptionLibProperties.ErrorReporting config = new ExceptionLibProperties.ErrorReporting();
+        LibExceptionProperties.ErrorReporting config = new LibExceptionProperties.ErrorReporting();
         config.setDsn(dsn);
         config.setEnvironment("exception-lib-smoke-test");
 

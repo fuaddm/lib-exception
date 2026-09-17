@@ -1,13 +1,7 @@
-package com.example.exceptionlib.error;
+package com.example.libexception.error;
 
 import org.springframework.http.HttpStatus;
 
-/**
- * Generic, service-agnostic error codes covering the common HTTP failure cases
- * shared by every microservice. Prefer a domain-specific {@link ErrorCode} enum
- * (e.g. {@code PIN_NOT_FOUND}) when the failure is meaningful to API clients;
- * fall back to these for truly generic failures (bad input, auth, unexpected errors).
- */
 public enum CommonErrorCode implements ErrorCode {
 
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "The request could not be understood or was missing required parameters."),
