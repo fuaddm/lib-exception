@@ -3,11 +3,17 @@ package com.example.libexception.exception;
 import com.example.libexception.error.CommonErrorCode;
 import com.example.libexception.error.ErrorCode;
 
-/** Thrown when the caller is authenticated but not allowed to perform the action. Maps to HTTP 403. */
+/**
+ * Thrown when the caller is authenticated but not allowed to perform the action. Maps to HTTP 403.
+ */
 public class ForbiddenException extends BaseException {
 
     public ForbiddenException(String message) {
         super(CommonErrorCode.FORBIDDEN, message);
+    }
+
+    public ForbiddenException() {
+        super(CommonErrorCode.FORBIDDEN);
     }
 
     public ForbiddenException(ErrorCode errorCode) {

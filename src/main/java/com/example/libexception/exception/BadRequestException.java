@@ -10,6 +10,10 @@ public class BadRequestException extends BaseException {
         super(CommonErrorCode.BAD_REQUEST, message);
     }
 
+    public BadRequestException() {
+        super(CommonErrorCode.BAD_REQUEST);
+    }
+
     public BadRequestException(ErrorCode errorCode) {
         super(errorCode);
     }

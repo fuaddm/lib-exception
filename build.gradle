@@ -32,6 +32,7 @@ dependencies {
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
     implementation 'io.sentry:sentry:8.56.0'
+    implementation 'jakarta.ws.rs:jakarta.ws.rs-api:3.1.0'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc'
     testImplementation 'org.springframework.boot:spring-boot-starter-validation'

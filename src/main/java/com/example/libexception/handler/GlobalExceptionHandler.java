@@ -3,12 +3,12 @@ package com.example.libexception.handler;
 import com.example.libexception.dto.ErrorResponse;
 import com.example.libexception.dto.FieldErrorDetail;
 import com.example.libexception.error.CommonErrorCode;
-import com.example.libexception.exception.BaseException;
-import com.example.libexception.exception.ValidationException;
+import com.example.libexception.exception.*;
 import com.example.libexception.reporting.ErrorReporter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.ws.rs.WebApplicationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -118,8 +118,25 @@ public class GlobalExceptionHandler {
                 CommonErrorCode.INTERNAL_SERVER_ERROR.getDefaultMessage(), request, null);
     }
 
+    @ExceptionHandler(WebApplicationException.class)
+    public ResponseEntity<ErrorResponse> handleWebApplicationException(WebApplicationException ex, HttpServletRequest request) {
+        int status = ex.getResponse().getStatus();
+
+        BaseException mappedException = switch (status) {
+            case 400 -> new BadRequestException();
+            case 401 -> new UnauthorizedException();
+            case 403 -> new ForbiddenException();
+            case 404 -> new NotFoundException();
+            case 409 -> new ConflictException();
+            case 429 -> new TooManyRequestsException();
+            default -> new InternalServerErrorException();
+        };
+
+        return handleBaseException(mappedException, request);
+    }
+
     private ResponseEntity<ErrorResponse> build(HttpStatus status, String code, String message,
-                                                 HttpServletRequest request, List<FieldErrorDetail> fieldErrors) {
+                                                HttpServletRequest request, List<FieldErrorDetail> fieldErrors) {
         ErrorResponse body = ErrorResponse.builder()
                 .status(status.value())
                 .error(status.getReasonPhrase())
